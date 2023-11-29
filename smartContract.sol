@@ -10,9 +10,9 @@ contract Voting {
 
     // Struct to represent an election
     struct Election {
-        string electionName;
         mapping(uint256 => uint256) voteCounts;
         mapping(address => bool) hasVoted;
+        mapping(string => bool) electionExists;
         VoteChoice[] choices;
     }
 
@@ -25,8 +25,10 @@ contract Voting {
     // Function to create a new election with specified choices
     function createElection(string memory _electionName, string[] memory _choiceTexts) external {
         require(bytes(_electionName).length > 0, "Election name cannot be empty");
+        require(!elections[_electionName].electionExists[_electionName], "Election with this name already exists");
 
         Election storage newElection = elections[_electionName];
+        newElection.electionExists[_electionName] = true;
 
         for (uint256 i = 0; i < _choiceTexts.length; i++) {
             newElection.choices.push(VoteChoice({
@@ -41,6 +43,7 @@ contract Voting {
         Election storage election = elections[_electionName];
 
         // Ensure the election exists
+        require(election.electionExists[_electionName], "Election with this name does not exist");
         require(bytes(_electionName).length > 0, "Election name cannot be empty");
 
         // Ensure the voter has not voted before
@@ -62,6 +65,7 @@ contract Voting {
         Election storage election = elections[_electionName];
 
         // Ensure the election exists
+        require(election.electionExists[_electionName], "Election with this name does not exist");
         require(bytes(_electionName).length > 0, "Election name cannot be empty");
 
         // Create an array to store vote counts
