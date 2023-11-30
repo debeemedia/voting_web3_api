@@ -17,7 +17,7 @@ contract Voting {
     }
 
     // Mapping to store elections by their names
-    mapping(string => Election) public elections;
+    mapping(string => Election) private elections;
 
     // Event to be emitted when a vote is cast
     event Voted(address indexed voter, string indexed electionName, uint256 voteChoice);
