@@ -22,20 +22,40 @@ contract Voting {
     // Event to be emitted when a vote is cast
     event Voted(address indexed voter, string indexed electionName, uint256 voteChoice);
 
-    // Function to create a new election with specified choices
-    function createElection(string memory _electionName, string[] memory _choiceTexts) external {
-        require(bytes(_electionName).length > 0, "Election name cannot be empty");
-        require(!elections[_electionName].electionExists[_electionName], "Election with this name already exists");
+   // Event to be emitted when an election is created
+event ElectionCreated(string indexed electionName, address indexed creator);
 
-        Election storage newElection = elections[_electionName];
-        newElection.electionExists[_electionName] = true;
+// Function to create a new election with specified choices
+function createElection(string memory _electionName, string[] memory _choiceTexts) external {
+    require(bytes(_electionName).length > 0, "Election name cannot be empty");
+    require(!elections[_electionName].electionExists[_electionName], "Election with this name already exists");
 
-        for (uint256 i = 0; i < _choiceTexts.length; i++) {
-            newElection.choices.push(VoteChoice({
-                choiceId: i + 1,
-                choiceText: _choiceTexts[i]
-            }));
+    Election storage newElection = elections[_electionName];
+    newElection.electionExists[_electionName] = true;
+
+    for (uint256 i = 0; i < _choiceTexts.length; i++) {
+        newElection.choices.push(VoteChoice({
+            choiceId: i + 1,
+            choiceText: _choiceTexts[i]
+        }));
+    }
+
+    // Emit the ElectionCreated event
+    emit ElectionCreated(_electionName, msg.sender);
+}
+
+
+    // Function to get the names of candidates in a specific election
+    function getCandidates(string memory _electionName) external view returns (string[] memory) {
+        Election storage election = elections[_electionName];
+        require(election.electionExists[_electionName], "Election with this name does not exist");
+
+        string[] memory candidateNames = new string[](election.choices.length);
+        for (uint256 i = 0; i < election.choices.length; i++) {
+            candidateNames[i] = election.choices[i].choiceText;
         }
+
+        return candidateNames;
     }
 
     // Function to cast a vote for a specific election and choice
