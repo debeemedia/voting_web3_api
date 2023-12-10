@@ -70,26 +70,30 @@ contract Voting {
 
     // Function to cast a vote for a specific election and choice
     function castVote(string memory _electionName, uint256 _voteChoice) external {
-        Election storage election = elections[_electionName];
+    Election storage election = elections[_electionName];
 
-        // Ensure the election exists
-        require(election.electionExists[_electionName], "Election with this name does not exist");
-        require(bytes(_electionName).length > 0, "Election name cannot be empty");
-        require(block.timestamp >= election.startTime && block.timestamp <= election.endTime, "Election is not currently active");
+    // Ensure the election exists
+    require(election.electionExists[_electionName], "Election with this name does not exist");
+    require(bytes(_electionName).length > 0, "Election name cannot be empty");
 
-        // Ensure the voter has not voted before
-        require(!election.hasVoted[msg.sender], "You have already voted");
+    // Check if the election is currently active
+    require(block.timestamp >= election.startTime, "Election has not started yet");
+    require(block.timestamp <= election.endTime, "Election has already ended");
 
-        // Ensure the vote choice is valid
-        require(_voteChoice >= 1 && _voteChoice <= election.choices.length, "Invalid vote choice");
+    // Ensure the voter has not voted before
+    require(!election.hasVoted[msg.sender], "You have already voted");
 
-        // Record the vote
-        election.voteCounts[_voteChoice]++;
-        election.hasVoted[msg.sender] = true;
+    // Ensure the vote choice is valid
+    require(_voteChoice >= 1 && _voteChoice <= election.choices.length, "Invalid vote choice");
 
-        // Emit the Voted event with timestamp
-        emit Voted(msg.sender, _electionName, _voteChoice, block.timestamp);
+    // Record the vote
+    election.voteCounts[_voteChoice]++;
+    election.hasVoted[msg.sender] = true;
+
+    // Emit the Voted event with timestamp
+    emit Voted(msg.sender, _electionName, _voteChoice, block.timestamp);
     }
+
 
     // Function to get the total vote count for each choice in a specific election
     function getResults(string memory _electionName) external view returns (ElectionChoice[] memory) {
