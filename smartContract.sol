@@ -20,24 +20,29 @@ contract Voting {
         mapping(address => bool) hasVoted;
         mapping(string => bool) electionExists;
         VoteChoice[] choices;
+        uint256 startTime;
+        uint256 endTime;
     }
 
     // Mapping to store elections by their names
     mapping(string => Election) private elections;
 
     // Event to be emitted when a vote is cast
-    event Voted(address indexed voter, string indexed electionName, uint256 voteChoice);
+    event Voted(address indexed voter, string indexed electionName, uint256 voteChoice, uint256 timestamp);
 
     // Event to be emitted when an election is created
-    event ElectionCreated(string indexed electionName, address indexed creator);
+    event ElectionCreated(string indexed electionName, address indexed creator, uint256 startTime, uint256 endTime);
 
-    // Function to create a new election with specified choices
-    function createElection(string memory _electionName, string[] memory _choiceTexts) external {
+    // Function to create a new election with specified choices, start time, and end time
+    function createElection(string memory _electionName, string[] memory _choiceTexts, uint256 _startTime, uint256 _endTime) external {
         require(bytes(_electionName).length > 0, "Election name cannot be empty");
         require(!elections[_electionName].electionExists[_electionName], "Election with this name already exists");
+        require(_startTime < _endTime, "Start time must be before end time");
 
         Election storage newElection = elections[_electionName];
         newElection.electionExists[_electionName] = true;
+        newElection.startTime = _startTime;
+        newElection.endTime = _endTime;
 
         for (uint256 i = 0; i < _choiceTexts.length; i++) {
             newElection.choices.push(VoteChoice({
@@ -47,7 +52,7 @@ contract Voting {
         }
 
         // Emit the ElectionCreated event
-        emit ElectionCreated(_electionName, msg.sender);
+        emit ElectionCreated(_electionName, msg.sender, _startTime, _endTime);
     }
 
     // Function to get the names of candidates in a specific election
@@ -70,6 +75,7 @@ contract Voting {
         // Ensure the election exists
         require(election.electionExists[_electionName], "Election with this name does not exist");
         require(bytes(_electionName).length > 0, "Election name cannot be empty");
+        require(block.timestamp >= election.startTime && block.timestamp <= election.endTime, "Election is not currently active");
 
         // Ensure the voter has not voted before
         require(!election.hasVoted[msg.sender], "You have already voted");
@@ -81,8 +87,8 @@ contract Voting {
         election.voteCounts[_voteChoice]++;
         election.hasVoted[msg.sender] = true;
 
-        // Emit the Voted event
-        emit Voted(msg.sender, _electionName, _voteChoice);
+        // Emit the Voted event with timestamp
+        emit Voted(msg.sender, _electionName, _voteChoice, block.timestamp);
     }
 
     // Function to get the total vote count for each choice in a specific election
