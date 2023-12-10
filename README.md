@@ -1,6 +1,8 @@
+*Smart Contract Documentation*
+
 **Smart Contract Address**
 
-`0xDc39Ba2253D3374838a5a5Eb3f9a3af1E3506B41`
+`0x648EbB014a3889909D08E00c5d5f77c994047250`
 
 **ABI (Application Binary Interface)**
 
@@ -35,6 +37,16 @@
 				"internalType": "string[]",
 				"name": "_choiceTexts",
 				"type": "string[]"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_startTime",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_endTime",
+				"type": "uint256"
 			}
 		],
 		"name": "createElection",
@@ -56,6 +68,18 @@
 				"internalType": "address",
 				"name": "creator",
 				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "startTime",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "endTime",
+				"type": "uint256"
 			}
 		],
 		"name": "ElectionCreated",
@@ -80,6 +104,12 @@
 				"indexed": false,
 				"internalType": "uint256",
 				"name": "voteChoice",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "timestamp",
 				"type": "uint256"
 			}
 		],
@@ -147,9 +177,12 @@
 - **Parameters:**
     - **`_electionName`** (type: string): Name of the election.
     - **`_choiceTexts`** (type: string[]): Array of choice texts.
+    - **`_startTime`** (type: uint256): Start time of the election as a Unix timestamp.
+    - **`_endTime`** (type: uint256): End time of the election as a Unix timestamp.
     - **Errors:**
         - **`Election name cannot be empty`**: If the provided election name is empty.
         - `**Election with this name already exists**`: If the provided election name already exists.
+        - **`Start time must be before end time`**: If the provided start time is not before the end time.
 - **Example Usage:**
     
     **`contract.createElection("Election1", ["Choice A", "Choice B", "Choice C"]);`**
@@ -177,8 +210,11 @@
     - **`_voteChoice`** (type: uint256): Chosen vote.
     - **Errors:**
         - **`Election name cannot be empty`**: If the provided election name is empty.
+        - **`Election with this name does not exist`**: If the provided election name does not exist.
         - **`You have already voted`**: If the voter has already cast a vote.
         - **`Invalid vote choice`**: If the chosen vote is not within the valid range.
+        - **`Election has not started yet`**: If the time for the election has not been reached.
+        - **`Election has already ended`**: If the time for the election has passed.
 - **Example Usage:**
     
     `**contract.castVote("Election1", 1);**`
@@ -207,7 +243,7 @@
     - **`voter`** (type: address): Address of the voter.
     - **`electionName`** (type: string): Name of the election.
     - **`voteChoice`** (type: uint256): Chosen vote.
-    - 
+    - **`timestamp`** (type: uint256): Timestamp when the vote was cast.
 
 ### **2. `ElectionCreated`**
 
@@ -215,3 +251,5 @@
 - **Parameters:**
     - **`electionName`** (type: string): Name of the election.
     - **`creator`**(type: address): Address of the creator.
+    - **`startTime`** (type: uint256): Start time of the election.
+    - **`endTime`** (type: uint256): End time of the election.
