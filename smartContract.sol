@@ -8,6 +8,12 @@ contract Voting {
         string choiceText;
     }
 
+    // Struct to represent an election choice with vote count
+    struct ElectionChoice {
+        string choiceText;
+        uint256 voteCount;
+    }
+
     // Struct to represent an election
     struct Election {
         mapping(uint256 => uint256) voteCounts;
@@ -22,28 +28,27 @@ contract Voting {
     // Event to be emitted when a vote is cast
     event Voted(address indexed voter, string indexed electionName, uint256 voteChoice);
 
-   // Event to be emitted when an election is created
-event ElectionCreated(string indexed electionName, address indexed creator);
+    // Event to be emitted when an election is created
+    event ElectionCreated(string indexed electionName, address indexed creator);
 
-// Function to create a new election with specified choices
-function createElection(string memory _electionName, string[] memory _choiceTexts) external {
-    require(bytes(_electionName).length > 0, "Election name cannot be empty");
-    require(!elections[_electionName].electionExists[_electionName], "Election with this name already exists");
+    // Function to create a new election with specified choices
+    function createElection(string memory _electionName, string[] memory _choiceTexts) external {
+        require(bytes(_electionName).length > 0, "Election name cannot be empty");
+        require(!elections[_electionName].electionExists[_electionName], "Election with this name already exists");
 
-    Election storage newElection = elections[_electionName];
-    newElection.electionExists[_electionName] = true;
+        Election storage newElection = elections[_electionName];
+        newElection.electionExists[_electionName] = true;
 
-    for (uint256 i = 0; i < _choiceTexts.length; i++) {
-        newElection.choices.push(VoteChoice({
-            choiceId: i + 1,
-            choiceText: _choiceTexts[i]
-        }));
+        for (uint256 i = 0; i < _choiceTexts.length; i++) {
+            newElection.choices.push(VoteChoice({
+                choiceId: i + 1,
+                choiceText: _choiceTexts[i]
+            }));
+        }
+
+        // Emit the ElectionCreated event
+        emit ElectionCreated(_electionName, msg.sender);
     }
-
-    // Emit the ElectionCreated event
-    emit ElectionCreated(_electionName, msg.sender);
-}
-
 
     // Function to get the names of candidates in a specific election
     function getCandidates(string memory _electionName) external view returns (string[] memory) {
@@ -81,19 +86,22 @@ function createElection(string memory _electionName, string[] memory _choiceText
     }
 
     // Function to get the total vote count for each choice in a specific election
-    function getResults(string memory _electionName) external view returns (uint256[] memory) {
+    function getResults(string memory _electionName) external view returns (ElectionChoice[] memory) {
         Election storage election = elections[_electionName];
 
         // Ensure the election exists
         require(election.electionExists[_electionName], "Election with this name does not exist");
         require(bytes(_electionName).length > 0, "Election name cannot be empty");
 
-        // Create an array to store vote counts
-        uint256[] memory results = new uint256[](election.choices.length);
+        // Create an array to store election choices with vote counts
+        ElectionChoice[] memory results = new ElectionChoice[](election.choices.length);
 
-        // Populate the array with vote counts for each choice
-        for (uint256 i = 1; i <= election.choices.length; i++) {
-            results[i - 1] = election.voteCounts[i];
+        // Populate the array with election choices and corresponding vote counts
+        for (uint256 i = 0; i < election.choices.length; i++) {
+            results[i] = ElectionChoice({
+                choiceText: election.choices[i].choiceText,
+                voteCount: election.voteCounts[i + 1] // Adjust index to match choiceId
+            });
         }
 
         return results;
