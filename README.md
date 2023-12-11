@@ -1,4 +1,4 @@
-*Smart Contract Documentation*
+# SMART CONTRACT DOCUMENTATION
 
 **Smart Contract Address**
 
@@ -185,10 +185,10 @@
         - **`Start time must be before end time`**: If the provided start time is not before the end time.
 - **Example Usage:**
     
-    **`contract.createElection("Election1", ["Choice A", "Choice B", "Choice C"]);`**
+    **`contract.createElection("Election1", ["Choice A", "Choice B", "Choice C"], 1702323863, 1702327463);`**
     
 
-### 2**. `getCandidates`**
+### **2. `getCandidates`**
 
 - **Description:** Returns an array of candidate names for a specific election.
 - **Parameters:**
@@ -202,7 +202,7 @@
     **`contract.getCandidates("Election1");`**
     
 
-### 3**. `castVote`**
+### **3. `castVote`**
 
 - **Description:** Casts a vote for a specific election and choice.
 - **Parameters:**
@@ -220,7 +220,7 @@
     `**contract.castVote("Election1", 1);**`
     
 
-### 4**. `getResults`**
+### **4. `getResults`**
 
 - **Description:** Gets the total vote count for each choice in a specific election.
 - **Parameters:**
