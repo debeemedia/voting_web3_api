@@ -1,4 +1,6 @@
 # SMART CONTRACT DOCUMENTATION
+## Overview
+The smart contract allows creation of an election, fetching of choices (candidates) in a given election, voting in a given election, and getting the results of a given election. Events are emitted when an election is created and when a vote is cast.
 
 **Smart Contract Address**
 
