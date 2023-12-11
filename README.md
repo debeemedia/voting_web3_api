@@ -183,7 +183,7 @@ The smart contract allows creation of an election, fetching of choices (candidat
     - **`_endTime`** (type: uint256): End time of the election as a Unix timestamp.
     - **Errors:**
         - **`Election name cannot be empty`**: If the provided election name is empty.
-        - `**Election with this name already exists**`: If the provided election name already exists.
+        - **`Election with this name already exists`**: If the provided election name already exists.
         - **`Start time must be before end time`**: If the provided start time is not before the end time.
 - **Example Usage:**
     
@@ -219,7 +219,7 @@ The smart contract allows creation of an election, fetching of choices (candidat
         - **`Election has already ended`**: If the time for the election has passed.
 - **Example Usage:**
     
-    `**contract.castVote("Election1", 1);**`
+    **`contract.castVote("Election1", 1);`**
     
 
 ### **4. `getResults`**
