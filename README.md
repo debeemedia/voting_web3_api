@@ -255,3 +255,6 @@ The smart contract allows creation of an election, fetching of choices (candidat
     - **`creator`**(type: address): Address of the creator.
     - **`startTime`** (type: uint256): Start time of the election.
     - **`endTime`** (type: uint256): End time of the election.
+
+# INTEGRATION
+* [FRONT END REPOSITORY](https://github.com/queen-x-vee/Hackathon-WIBAHacks)
